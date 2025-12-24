@@ -24,19 +24,19 @@ importers:
   tooling/eslint-config:
     dependencies:
       '@eslint/js':
-        specifier: ^9.17.0
+        specifier: ^9.39.2
         version: 9.39.2
       eslint:
         specifier: ^9.0.0
         version: 9.39.2
       globals:
-        specifier: ^16.0.0
+        specifier: ^16.5.0
         version: 16.5.0
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
       typescript-eslint:
-        specifier: ^8.18.0
+        specifier: ^8.50.1
         version: 8.50.1(eslint@9.39.2)(typescript@5.9.3)
 
   tooling/prettier-config:
