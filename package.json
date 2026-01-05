@@ -7,12 +7,17 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "turbo run format",
-    "format:check": "turbo run format:check"
+    "format:check": "turbo run format:check",
+    "prepare": "husky"
   },
   "packageManager": "pnpm@10.24.0",
+  "type": "module",
   "devDependencies": {
     "@commitlint/cli": "^20.3.0",
     "@commitlint/config-conventional": "^20.3.0",
+    "@frontend-mcp-kit/eslint-config": "workspace:*",
+    "@frontend-mcp-kit/prettier-config": "workspace:*",
+    "@frontend-mcp-kit/typescript-config": "workspace:*",
     "eslint": "^9.39.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
