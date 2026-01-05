@@ -6,37 +6,40 @@
 
 ## 기술 스택 & 버전
 
-| 도구 | 버전 |
-|------|------|
-| Node.js | 20 LTS |
-| pnpm | 10.x |
-| TypeScript | 5.x |
-| ESLint | 9.x (Flat Config) |
-| Prettier | 3.x |
-| Turborepo | 2.x |
-| MCP SDK | @modelcontextprotocol/sdk |
+| 도구       | 버전                      |
+| ---------- | ------------------------- |
+| Node.js    | 20 LTS                    |
+| pnpm       | 10.x                      |
+| TypeScript | 5.x                       |
+| ESLint     | 9.x (Flat Config)         |
+| Prettier   | 3.x                       |
+| Turborepo  | 2.x                       |
+| MCP SDK    | @modelcontextprotocol/sdk |
 
 ## 폴더 구조
 
-- `packages/` - MCP 서버 패키지들 (@frontend-mcp-kit/*)
+- `packages/` - MCP 서버 패키지들 (@frontend-mcp-kit/\*)
 - `tooling/` - 공통 설정 (typescript-config, eslint-config, prettier-config)
 - `apps/` - 문서 사이트 등
 
 ## 코드 스타일
 
 ### 포맷팅 (Prettier)
+
 - 들여쓰기: 2스페이스
 - 따옴표: 쌍따옴표 (`"`)
 - 세미콜론: 사용
 - 줄 길이: 80자
 
 ### TypeScript
+
 - strict 모드 필수
 - `any` 사용 금지 → `unknown` 사용 후 타입 가드
 - 명시적 반환 타입 권장
 - `as` 타입 단언 최소화
 
 ### 네이밍
+
 - 변수/함수: camelCase
 - 타입/인터페이스: PascalCase
 - 상수: SCREAMING_SNAKE_CASE
@@ -45,13 +48,16 @@
 ## 개발 규칙
 
 ### 패키지 네이밍
+
 - 스코프: `@frontend-mcp-kit/`
 - 케밥케이스: `hardcoded-strings`, `test-generator`
 
 ### 커밋 메시지
+
 ```
 :gitmoji: type: 설명
 ```
+
 - `:sparkles:` feat: 새 기능
 - `:bug:` fix: 버그 수정
 - `:wrench:` chore: 설정, 의존성
@@ -94,12 +100,14 @@ pnpm format:check                         # 포맷 검사 (CI용)
 ## MCP 서버 개발
 
 ### 새 패키지 생성
+
 1. `packages/<name>` 폴더 생성
 2. `@modelcontextprotocol/sdk`, `zod` 의존성 추가
 3. `@frontend-mcp-kit/typescript-config` 확장
 4. `src/index.ts`에서 서버 정의
 
 ### 필수 구조
+
 ```
 packages/<name>/
 ├── src/
@@ -110,8 +118,27 @@ packages/<name>/
 ```
 
 ### 의존성
+
 ```bash
 pnpm add @modelcontextprotocol/sdk zod --filter @frontend-mcp-kit/<name>
+```
+
+## Git Hooks
+
+커밋 시 자동 실행:
+
+- **pre-commit**: lint-staged (staged 파일 린트/포맷)
+- **commit-msg**: commitlint (커밋 메시지 검사)
+
+### 커밋이 차단되는 경우
+
+- ESLint 에러가 있는 코드
+- 잘못된 커밋 메시지 형식
+
+### Hooks 건너뛰기 (비권장)
+
+```bash
+git commit --no-verify -m "message"
 ```
 
 ## 주의사항
