@@ -33,6 +33,7 @@
     "@frontend-mcp-kit/eslint-config": "workspace:*",
     "@frontend-mcp-kit/prettier-config": "workspace:*",
     "@frontend-mcp-kit/typescript-config": "workspace:*",
+    "@types/node": "^25.0.3",
     "typescript": "^5.9.3"
   }
 }
