@@ -1,0 +1,40 @@
+// 테스트 프레임워크
+export type TestFramework = "vitest" | "jest" | "unknown";
+
+// 코드 타입
+export type CodeType = "component" | "hook" | "utility" | "api";
+
+// 테스트 환경 정보
+export interface TestEnvironment {
+  framework: TestFramework;
+  hasTestingLibrary: boolean;
+  testFilePattern: string;
+  configFile: string | null;
+}
+
+// 파라미터 정보
+export interface ParamInfo {
+  name: string;
+  type: string;
+}
+
+// Export 정보
+export interface ExportInfo {
+  name: string;
+  type: "function" | "component" | "hook" | "const";
+  params: ParamInfo[];
+  returnType: string;
+}
+
+// 코드 분석 결과
+export interface CodeAnalysis {
+  type: CodeType;
+  exports: ExportInfo[];
+  dependencies: string[];
+}
+
+// 테스트 뼈대 결과
+export interface ScaffoldResult {
+  testFilePath: string;
+  content: string;
+}
