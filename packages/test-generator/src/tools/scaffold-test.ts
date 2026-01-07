@@ -43,7 +43,7 @@ export async function runScaffoldTest(input: ScaffoldTestInput) {
   const analysis = await analyzeCode(filePath);
 
   // 테스트 파일 경로 생성
-  const testFilePath = filePath.replace(/\.(ts|tsx)$/, ".test.$1");
+  const testFilePath = filePath.replace(/\.(ts|tsx|js|jsx)$/, ".test.$1");
 
   // AI에게 전달할 정보만 반환
   const result = {
