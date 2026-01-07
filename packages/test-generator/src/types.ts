@@ -30,9 +30,3 @@ export interface CodeAnalysis {
   exports: ExportInfo[];
   dependencies: string[];
 }
-
-// 테스트 뼈대 결과
-export interface ScaffoldResult {
-  testFilePath: string;
-  content: string;
-}
