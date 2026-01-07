@@ -1,19 +1,20 @@
 import { z } from "zod";
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, parse } from "node:path";
 import { detectTestEnvironment } from "../detector.js";
 import { analyzeCode } from "../analyzer.js";
 
 // package.json을 찾을 때까지 상위 폴더 탐색
 function findProjectRoot(filePath: string): string {
+  const root = parse(filePath).root;
   let dir = dirname(filePath);
-  while (dir !== "/") {
+  while (dir !== root) {
     if (existsSync(join(dir, "package.json"))) {
       return dir;
     }
     dir = dirname(dir);
   }
-  return dirname(filePath); // 못 찾으면 파일의 상위 폴더 반환
+  return dirname(filePath);
 }
 
 export const scaffoldTestSchema = z.object({
