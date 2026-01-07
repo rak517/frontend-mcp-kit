@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { analyzeCode } from "../analyzer.js";
 
 export const analyzeCodeSchema = z.object({

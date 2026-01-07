@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { detectTestEnvironment } from "../detector.js";
 
 // Tool 입력 스키마
