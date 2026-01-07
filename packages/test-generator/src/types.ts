@@ -1,9 +1,6 @@
 // 테스트 프레임워크
 export type TestFramework = "vitest" | "jest" | "unknown";
 
-// 코드 타입
-export type CodeType = "component" | "hook" | "utility" | "api";
-
 // 테스트 환경 정보
 export interface TestEnvironment {
   framework: TestFramework;
@@ -28,7 +25,8 @@ export interface ExportInfo {
 
 // 코드 분석 결과
 export interface CodeAnalysis {
-  type: CodeType;
+  fileName: string;
+  fileExtension: string;
   exports: ExportInfo[];
   dependencies: string[];
 }
