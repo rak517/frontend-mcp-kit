@@ -84,7 +84,7 @@ export async function detectTestEnvironment(
         : null;
 
   // 테스트 파일 패턴 (기본값)
-  const testFilePattern = framework === "vitest" ? "*.test.ts" : "*.test.tsx";
+  const testFilePattern = hasTestingLibrary ? "*.test.tsx" : "*.test.ts";
 
   return {
     framework,
