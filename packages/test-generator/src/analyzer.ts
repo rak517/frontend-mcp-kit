@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { basename, extname } from "node:path";
 import { parse } from "@typescript-eslint/typescript-estree";
 import type { CodeAnalysis, ExportInfo } from "./types.js";
 
@@ -80,8 +81,8 @@ function extractDependencies(ast: ReturnType<typeof parse>): string[] {
 
 export async function analyzeCode(filePath: string): Promise<CodeAnalysis> {
   const ast = await parseFile(filePath);
-  const fileName = filePath.split("/").pop() || "";
-  const fileExtension = fileName.split(".").pop() || "";
+  const fileName = basename(filePath);
+  const fileExtension = extname(fileName).slice(1);
 
   return {
     fileName,
