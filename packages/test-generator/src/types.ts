@@ -30,3 +30,41 @@ export interface CodeAnalysis {
   exports: ExportInfo[];
   dependencies: string[];
 }
+
+// Props 정보
+export interface PropInfo {
+  name: string;
+  type: string;
+  required: boolean;
+  defaultValue?: string;
+}
+
+// Hook 정보
+export interface HookInfo {
+  name: string;
+  isCustom: boolean; // use로 시작하지만 React 내장 아닌 경우
+}
+
+// Event Handler 정보
+export interface EventInfo {
+  name: string;
+  handlerName: string;
+}
+
+// 컴포넌트 분석 결과
+export interface ComponentAnalysis {
+  componentName: string;
+  props: PropInfo[];
+  hooks: HookInfo[];
+  events: EventInfo[];
+  hasChildren: boolean;
+  isForwardRef: boolean;
+  isMemo: boolean;
+}
+
+// 유사 테스트 검색 결과
+export interface SimilarTest {
+  filePath: string;
+  similarity: "high" | "medium" | "low";
+  reason: string;
+}
