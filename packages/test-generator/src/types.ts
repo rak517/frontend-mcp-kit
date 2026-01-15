@@ -77,3 +77,31 @@ export interface McpToolResponse {
     text: string;
   }>;
 }
+
+// 접근성 제안 항목
+export interface A11ySuggestion {
+  type: "aria" | "keyboard" | "contrast" | "focus";
+  element?: string;
+  suggestion: string;
+}
+
+// 접근성 분석 결과
+export interface A11yAnalysis {
+  hasIssues: boolean;
+  suggestions: A11ySuggestion[];
+  jestAxeExample: string;
+}
+
+// 테스트 갭 분석 결과
+export interface TestGapAnalysis {
+  sourceFile: string;
+  testFile: string | null;
+  tested: string[];
+  untested: string[];
+}
+
+// 테스트 이름 제안 결과
+export interface TestNameSuggestion {
+  describe: string;
+  tests: string[];
+}
