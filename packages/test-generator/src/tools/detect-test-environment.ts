@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { detectTestEnvironment } from "../detector.js";
+import type { McpToolResponse } from "../types.js";
 
 // Tool 입력 스키마
 export const detectTestEnvironmentSchema = z.object({
@@ -17,7 +18,7 @@ export type DetectTestEnvironmentInput = z.infer<
 // Tool 실행 함수
 export async function runDetectTestEnvironment(
   input: DetectTestEnvironmentInput
-) {
+): Promise<McpToolResponse> {
   const { projectPath } = input;
 
   const result = await detectTestEnvironment(projectPath);

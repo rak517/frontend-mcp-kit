@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, join, parse } from "node:path";
 import { detectTestEnvironment } from "../detector.js";
 import { analyzeCode } from "../analyzer.js";
+import type { McpToolResponse } from "../types.js";
 
 // package.json을 찾을 때까지 상위 폴더 탐색
 function findProjectRoot(filePath: string): string {
@@ -28,7 +29,9 @@ export const scaffoldTestSchema = z.object({
 
 export type ScaffoldTestInput = z.infer<typeof scaffoldTestSchema>;
 
-export async function runScaffoldTest(input: ScaffoldTestInput) {
+export async function runScaffoldTest(
+  input: ScaffoldTestInput
+): Promise<McpToolResponse> {
   const { filePath, framework } = input;
 
   // 프레임워크 감지

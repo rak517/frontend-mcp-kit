@@ -68,3 +68,12 @@ export interface SimilarTest {
   similarity: "high" | "medium" | "low";
   reason: string;
 }
+
+// MCP Tool 응답 타입
+export interface McpToolResponse {
+  [key: string]: unknown;
+  content: Array<{
+    type: "text";
+    text: string;
+  }>;
+}
