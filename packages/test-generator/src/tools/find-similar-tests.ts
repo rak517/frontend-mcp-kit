@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
 import { basename, dirname, join, parse } from "node:path";
 import { z } from "zod";
-import { SimilarTest } from "../types.js";
+import type { McpToolResponse, SimilarTest } from "../types.js";
 
 export const findSimilarTestsSchema = z.object({
   filePath: z.string().describe("테스트를 작성할 소스 파일의 절대 경로"),
@@ -146,7 +146,9 @@ function splitCamelCase(str: string): string[] {
   return str.split(/(?=[A-Z])/).filter((s) => s.length > 0);
 }
 
-export async function runFindSimilarTests(input: FindSimilarTestsInput) {
+export async function runFindSimilarTests(
+  input: FindSimilarTestsInput
+): Promise<McpToolResponse> {
   const { filePath, maxResults } = input;
 
   const projectRoot = findProjectRoot(filePath);
