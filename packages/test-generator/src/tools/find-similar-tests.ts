@@ -75,9 +75,16 @@ function calculateSimilarity(
   );
   const testDir = dirname(testFile);
 
-  // 같은 파일의 테스트 (Button.tsx -> Button.test.tsx)
-  if (sourceName === testName && sourceDir === testDir) {
-    return null; // 자기 자신의 테스트는 제외
+  // 같은 파일의 테스트 제외
+  if (sourceName === testName) {
+    // 같은 폴더의 테스트 (Button.tsx -> Button.test.tsx)
+    if (sourceDir === testDir) {
+      return null;
+    }
+    // __tests__ 폴더 내 테스트 (Button.tsx -> __tests__/Button.test.tsx)
+    if (basename(testDir) === "__tests__" && dirname(testDir) === sourceDir) {
+      return null;
+    }
   }
 
   // 같은 폴더 + 이름에 공통 단어 포함 (Button, IconButton)
