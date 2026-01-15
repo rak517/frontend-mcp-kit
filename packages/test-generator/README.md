@@ -165,6 +165,72 @@ React 컴포넌트를 분석하여 props, hooks, events 정보를 추출합니�
 }
 ```
 
+### suggest_a11y_tests
+
+React 컴포넌트의 접근성 테스트 포인트를 분석하고 jest-axe 사용법을 제안합니다.
+
+**입력:**
+
+- `filePath`: 분석할 React 컴포넌트 파일의 절대 경로
+
+**출력:**
+
+```json
+{
+  "hasIssues": true,
+  "suggestions": [
+    {
+      "type": "aria",
+      "element": "button",
+      "suggestion": "빈 button에 aria-label 또는 텍스트 콘텐츠 추가 필요"
+    }
+  ],
+  "jestAxeExample": "expect(await axe(container)).toHaveNoViolations()"
+}
+```
+
+### analyze_test_gaps
+
+소스 파일과 테스트 파일을 비교하여 테스트되지 않은 함수를 식별합니다.
+
+**입력:**
+
+- `filePath`: 분석할 소스 파일의 절대 경로
+
+**출력:**
+
+```json
+{
+  "sourceFile": "/path/to/utils.ts",
+  "testFile": "/path/to/utils.test.ts",
+  "tested": ["formatDate", "parseJSON"],
+  "untested": ["validateEmail", "debounce"]
+}
+```
+
+### suggest_test_names
+
+소스 파일 분석 기반으로 describe/it 블록 구조와 테스트 이름을 제안합니다.
+
+**입력:**
+
+- `filePath`: 분석할 소스 파일의 절대 경로
+
+**출력:**
+
+```json
+[
+  {
+    "describe": "LoginForm",
+    "tests": [
+      "should render correctly",
+      "should render with email prop",
+      "should handle click event"
+    ]
+  }
+]
+```
+
 ## 지원 프레임워크
 
 - Vitest
