@@ -107,6 +107,64 @@ TypeScript/JavaScript 파일을 분석하여 exports와 dependencies를 추출�
 }
 ```
 
+### analyze_component
+
+React 컴포넌트를 분석하여 props, hooks, events 정보를 추출합니다.
+
+**입력:**
+
+- `filePath`: 분석할 React 컴포넌트 파일의 절대 경로
+
+**출력:**
+
+```json
+{
+  "componentName": "Button",
+  "props": [
+    { "name": "label", "type": "string", "required": true },
+    { "name": "disabled", "type": "boolean", "required": false }
+  ],
+  "hooks": [
+    { "name": "useState", "isCustom": false },
+    { "name": "useQuery", "isCustom": true }
+  ],
+  "events": [{ "name": "onClick", "handlerName": "handleClick" }],
+  "hasChildren": true,
+  "isForwardRef": false,
+  "isMemo": false
+}
+```
+
+### find_similar_tests
+
+프로젝트 내 유사한 테스트 파일을 검색하여 참고할 수 있도록 합니다.
+
+**입력:**
+
+- `filePath`: 테스트를 작성할 소스 파일의 절대 경로
+- `maxResults` (optional): 반환할 최대 결과 수 (기본값: 5)
+
+**출력:**
+
+```json
+{
+  "sourceFile": "/path/to/Button.tsx",
+  "similarTests": [
+    {
+      "filePath": "/path/to/IconButton.test.tsx",
+      "similarity": "high",
+      "reason": "같은 폴더의 유사한 컴포넌트 (IconButton)"
+    },
+    {
+      "filePath": "/path/to/Card.test.tsx",
+      "similarity": "medium",
+      "reason": "같은 폴더의 테스트 파일"
+    }
+  ],
+  "totalFound": 10
+}
+```
+
 ## 지원 프레임워크
 
 - Vitest
