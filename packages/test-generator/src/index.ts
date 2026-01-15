@@ -15,6 +15,18 @@ import {
   findSimilarTestsSchema,
   runFindSimilarTests,
 } from "./tools/find-similar-tests.js";
+import {
+  runSuggestA11yTests,
+  suggestA11yTestsSchema,
+} from "./tools/suggest-a11y-tests.js";
+import {
+  analyzeTestGapsSchema,
+  runAnalyzeTestGaps,
+} from "./tools/analyze-test-gaps.js";
+import {
+  runSuggestTestNames,
+  suggestTestNamesSchema,
+} from "./tools/suggest-test-names.js";
 
 const server = new McpServer({
   name: "test-generator",
@@ -72,6 +84,39 @@ server.registerTool(
     inputSchema: findSimilarTestsSchema,
   },
   runFindSimilarTests
+);
+
+// Tool 6: 접근성 테스트 제안
+server.registerTool(
+  "suggest_a11y_tests",
+  {
+    description:
+      "React 컴포넌트의 접근성 테스트 포인트를 분석하고 jest-axe 사용법을 제안합니다",
+    inputSchema: suggestA11yTestsSchema,
+  },
+  runSuggestA11yTests
+);
+
+// Tool 7: 테스트 갭 분석
+server.registerTool(
+  "analyze_test_gaps",
+  {
+    description:
+      "소스 파일과 테스트 파일을 비교하여 테스트되지 않은 함수를 식별합니다",
+    inputSchema: analyzeTestGapsSchema,
+  },
+  runAnalyzeTestGaps
+);
+
+// Tool 8: 테스트 이름 제안
+server.registerTool(
+  "suggest_test_names",
+  {
+    description:
+      "소스 파일 분석 기반으로 describe/it 블록 구조와 테스트 이름을 제안합니다",
+    inputSchema: suggestTestNamesSchema,
+  },
+  runSuggestTestNames
 );
 
 async function main(): Promise<void> {
