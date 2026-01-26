@@ -8,15 +8,53 @@ export const suggestA11yTestsSchema = z.object({
 
 export type SuggestA11yTestsInput = z.infer<typeof suggestA11yTestsSchema>;
 
-// 접근성 검사 규칙
+// JSX 시작 태그 추출 (중괄호 깊이 추적하여 정확한 태그 경계 파악)
+function extractJsxOpenTags(content: string): string[] {
+  const tags: string[] = [];
+  let i = 0;
+
+  while (i < content.length) {
+    // 시작 태그 찾기 (<로 시작하고 </가 아닌 것)
+    if (content[i] === "<" && content[i + 1] !== "/") {
+      let depth = 0;
+      let j = i + 1;
+
+      while (j < content.length) {
+        if (content[j] === "{") depth++;
+        else if (content[j] === "}") depth--;
+        else if (content[j] === ">" && depth === 0) {
+          tags.push(content.slice(i, j + 1));
+          break;
+        }
+        j++;
+      }
+      i = j + 1;
+    } else {
+      i++;
+    }
+  }
+
+  return tags;
+}
+
+// onClick이 있지만 키보드 핸들러가 없는 태그 검사
+function checkClickWithoutKeyboard(content: string): boolean {
+  const tags = extractJsxOpenTags(content);
+
+  for (const tag of tags) {
+    const hasOnClick = /onClick/.test(tag);
+    const hasKeyboardHandler = /onKeyDown|onKeyPress|onKeyUp/.test(tag);
+
+    if (hasOnClick && !hasKeyboardHandler) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// 접근성 검사 규칙 (정규식 기반)
 const A11Y_RULES = {
-  // 클릭 가능한 요소에 키보드 핸들러 필요
-  clickWithoutKeyboard: {
-    pattern: /onClick(?!.*onKeyDown|.*onKeyPress|.*onKeyUp)/g,
-    type: "keyboard" as const,
-    suggestion:
-      "onClick이 있는 요소에 키보드 이벤트 핸들러(onKeyDown) 추가 필요",
-  },
   // img 태그에 alt 속성 필요
   imgWithoutAlt: {
     pattern: /<img(?![^>]*alt=)[^>]*>/g,
@@ -62,6 +100,16 @@ async function analyzeA11y(filePath: string): Promise<A11yAnalysis> {
   const content = await readFile(filePath, "utf-8");
   const suggestions: A11ySuggestion[] = [];
 
+  // 1. clickWithoutKeyboard 검사 (별도 함수로 처리)
+  if (checkClickWithoutKeyboard(content)) {
+    suggestions.push({
+      type: "keyboard",
+      suggestion:
+        "onClick이 있는 요소에 키보드 이벤트 핸들러(onKeyDown) 추가 필요",
+    });
+  }
+
+  // 2. 나머지 규칙 검사 (정규식 기반)
   for (const [, rule] of Object.entries(A11Y_RULES)) {
     const matches = content.match(rule.pattern);
     if (matches && matches.length > 0) {
