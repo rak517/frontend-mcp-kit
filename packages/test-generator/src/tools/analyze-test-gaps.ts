@@ -39,31 +39,28 @@ async function extractTestedNames(testFilePath: string): Promise<string[]> {
   const content = await readFile(testFilePath, "utf-8");
   const testedNames: string[] = [];
 
-  // describe("FunctionName", ...) 패턴
+  // describe("FunctionName", ...) 패턴만 추출
+  // it/test 블록은 자연어 설명이므로 오탐 가능성이 높아 제외
   const describeMatches = content.matchAll(/describe\s*\(\s*["']([^"']+)["']/g);
   for (const match of describeMatches) {
-    testedNames.push(match[1]);
-  }
-
-  // it("should ... FunctionName", ...) 또는 test("FunctionName", ...) 패턴
-  const testMatches = content.matchAll(/(?:it|test)\s*\(\s*["']([^"']+)["']/g);
-  for (const match of testMatches) {
     testedNames.push(match[1]);
   }
 
   return testedNames;
 }
 
-// 이름이 테스트되었는지 확인
+// 정규식 메타문자 이스케이프
+function escapeRegExp(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// 이름이 테스트되었는지 확인 (단어 경계 기반)
 function isNameTested(exportName: string, testedNames: string[]): boolean {
-  const lowerExportName = exportName.toLowerCase();
-  return testedNames.some((tested) => {
-    const lowerTested = tested.toLowerCase();
-    return (
-      lowerTested.includes(lowerExportName) ||
-      lowerExportName.includes(lowerTested)
-    );
-  });
+  // 정규식 메타문자 이스케이프 후 단어 경계 패턴 생성
+  const escapedName = escapeRegExp(exportName);
+  const pattern = new RegExp(`\\b${escapedName}\\b`, "i");
+
+  return testedNames.some((tested) => pattern.test(tested));
 }
 
 async function analyzeGaps(filePath: string): Promise<TestGapAnalysis> {
