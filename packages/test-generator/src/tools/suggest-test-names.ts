@@ -57,6 +57,7 @@ function generateComponentTests(
 
 async function suggestNames(filePath: string): Promise<TestNameSuggestion[]> {
   const suggestions: TestNameSuggestion[] = [];
+  const addedNames = new Set<string>(); // 중복 방지용
 
   // 파일 확장자로 컴포넌트 여부 판단
   const isComponent = filePath.endsWith(".tsx") || filePath.endsWith(".jsx");
@@ -77,6 +78,7 @@ async function suggestNames(filePath: string): Promise<TestNameSuggestion[]> {
           hookNames
         ),
       });
+      addedNames.add(analysis.componentName); // 추가된 이름 기록
     } catch {
       // 컴포넌트 분석 실패 시 기본 코드 분석으로 폴백
     }
@@ -86,12 +88,18 @@ async function suggestNames(filePath: string): Promise<TestNameSuggestion[]> {
   const codeAnalysis = await analyzeCode(filePath);
 
   for (const exp of codeAnalysis.exports) {
+    // 이미 추가된 이름은 건너뛰기 (중복 방지)
+    if (addedNames.has(exp.name)) {
+      continue;
+    }
+
     if (exp.type === "function") {
       const paramNames = exp.params.map((p) => p.name);
       suggestions.push({
         describe: exp.name,
         tests: generateFunctionTests(exp.name, paramNames),
       });
+      addedNames.add(exp.name);
     }
   }
 
