@@ -66,22 +66,26 @@ const A11Y_RULES = {
     suggestion: "img 태그에 alt 속성 추가 필요",
   },
   // button에 텍스트 또는 aria-label 필요
+  // aria-label/aria-labelledby가 없고 내용이 비어있는 버튼만 매칭
   buttonWithoutLabel: {
-    pattern: /<button[^>]*>[\s]*<\/button>|<button[^>]*\/>/g,
+    pattern:
+      /<button(?![^>]*aria-label(?:ledby)?=)[^>]*>[\s]*<\/button>|<button(?![^>]*aria-label(?:ledby)?=)[^>]*\/>/g,
     type: "aria" as const,
     element: "button",
     suggestion: "빈 button에 aria-label 또는 텍스트 콘텐츠 추가 필요",
   },
-  // div/span에 onClick이 있으면 role과 tabIndex 필요
+  // div/span에 onClick이 있지만 role/tabIndex가 없는 경우
+  // role 또는 tabIndex가 이미 있으면 제외
   divClickable: {
-    pattern: /<(?:div|span)[^>]*onClick[^>]*>/g,
+    pattern: /<(?:div|span)(?![^>]*(?:role=|tabIndex=))[^>]*onClick[^>]*>/g,
     type: "aria" as const,
     element: "div/span",
     suggestion: "클릭 가능한 div/span에 role='button'과 tabIndex={0} 추가 필요",
   },
   // input에 label 연결 필요
+  // aria-label, aria-labelledby, id가 모두 없는 input만 매칭
   inputWithoutLabel: {
-    pattern: /<input(?![^>]*aria-label|.*id=)[^>]*>/g,
+    pattern: /<input(?![^>]*(?:aria-label(?:ledby)?=|id=))[^>]*>/g,
     type: "aria" as const,
     element: "input",
     suggestion: "input에 aria-label 또는 연결된 label 추가 필요",
@@ -135,14 +139,37 @@ export async function runSuggestA11yTests(
   input: SuggestA11yTestsInput
 ): Promise<McpToolResponse> {
   const { filePath } = input;
-  const result = await analyzeA11y(filePath);
 
-  return {
-    content: [
-      {
-        type: "text" as const,
-        text: JSON.stringify(result, null, 2),
-      },
-    ],
-  };
+  try {
+    const result = await analyzeA11y(filePath);
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: JSON.stringify(result, null, 2),
+        },
+      ],
+    };
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : "알 수 없는 오류";
+
+    return {
+      content: [
+        {
+          type: "text" as const,
+          text: JSON.stringify(
+            {
+              error: true,
+              filePath,
+              message: `파일 분석 실패: ${errorMessage}`,
+            },
+            null,
+            2
+          ),
+        },
+      ],
+    };
+  }
 }
