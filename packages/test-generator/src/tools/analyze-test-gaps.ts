@@ -2,11 +2,12 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import { z } from "zod";
+import { absolutePathSchema } from "../schemas.js";
 import { McpToolResponse, TestGapAnalysis } from "../types.js";
 import { analyzeCode } from "../analyzer.js";
 
 export const analyzeTestGapsSchema = z.object({
-  filePath: z.string().describe("분석할 소스 파일의 절대 경로"),
+  filePath: absolutePathSchema.describe("분석할 소스 파일의 절대 경로"),
 });
 
 export type AnalyzeTestGapsInput = z.infer<typeof analyzeTestGapsSchema>;

@@ -3,6 +3,7 @@ import { existsSync } from "node:fs";
 import { dirname, join, parse } from "node:path";
 import { detectTestEnvironment } from "../detector.js";
 import { analyzeCode } from "../analyzer.js";
+import { absolutePathSchema } from "../schemas.js";
 import type { McpToolResponse } from "../types.js";
 
 // package.json을 찾을 때까지 상위 폴더 탐색
@@ -19,7 +20,9 @@ function findProjectRoot(filePath: string): string {
 }
 
 export const scaffoldTestSchema = z.object({
-  filePath: z.string().describe("테스트를 생성할 소스 파일 경로"),
+  filePath: absolutePathSchema.describe(
+    "테스트를 생성할 소스 파일의 절대 경로"
+  ),
   framework: z
     .enum(["vitest", "jest", "auto"])
     .optional()
