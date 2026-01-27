@@ -1,10 +1,11 @@
 import { z } from "zod";
 import { analyzeCode } from "../analyzer.js";
 import { analyzeComponent } from "../component-analyzer.js";
+import { absolutePathSchema } from "../schemas.js";
 import type { McpToolResponse, TestNameSuggestion } from "../types.js";
 
 export const suggestTestNamesSchema = z.object({
-  filePath: z.string().describe("분석할 소스 파일의 절대 경로"),
+  filePath: absolutePathSchema.describe("분석할 소스 파일의 절대 경로"),
 });
 
 export type SuggestTestNamesInput = z.infer<typeof suggestTestNamesSchema>;

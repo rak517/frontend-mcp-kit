@@ -2,10 +2,13 @@ import { existsSync } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
 import { basename, dirname, join, parse } from "node:path";
 import { z } from "zod";
+import { absolutePathSchema } from "../schemas.js";
 import type { McpToolResponse, SimilarTest } from "../types.js";
 
 export const findSimilarTestsSchema = z.object({
-  filePath: z.string().describe("테스트를 작성할 소스 파일의 절대 경로"),
+  filePath: absolutePathSchema.describe(
+    "테스트를 작성할 소스 파일의 절대 경로"
+  ),
   maxResults: z
     .number()
     .optional()

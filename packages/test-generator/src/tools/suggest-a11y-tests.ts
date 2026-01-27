@@ -1,9 +1,12 @@
 import { z } from "zod";
-import { A11yAnalysis, A11ySuggestion, McpToolResponse } from "../types.js";
 import { readFile } from "node:fs/promises";
+import { absolutePathSchema } from "../schemas.js";
+import { A11yAnalysis, A11ySuggestion, McpToolResponse } from "../types.js";
 
 export const suggestA11yTestsSchema = z.object({
-  filePath: z.string().describe("분석할 React 컴포넌트 파일의 절대 경로"),
+  filePath: absolutePathSchema.describe(
+    "분석할 React 컴포넌트 파일의 절대 경로"
+  ),
 });
 
 export type SuggestA11yTestsInput = z.infer<typeof suggestA11yTestsSchema>;

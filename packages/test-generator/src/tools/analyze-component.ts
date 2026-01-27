@@ -1,9 +1,12 @@
 import { z } from "zod";
 import { analyzeComponent } from "../component-analyzer.js";
+import { absolutePathSchema } from "../schemas.js";
 import type { McpToolResponse } from "../types.js";
 
 export const analyzeComponentSchema = z.object({
-  filePath: z.string().describe("분석할 React 컴포넌트 파일의 절대 경로"),
+  filePath: absolutePathSchema.describe(
+    "분석할 React 컴포넌트 파일의 절대 경로"
+  ),
 });
 
 export type AnalyzeComponentInput = z.infer<typeof analyzeComponentSchema>;
