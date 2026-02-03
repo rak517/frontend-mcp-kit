@@ -1,12 +1,12 @@
 {
-  "name": "@frontend-mcp-kit/test-generator",
+  "name": "@frontend-mcp-kit/test-toolkit",
   "version": "0.0.1",
-  "description": "MCP server for frontend test generation",
+  "description": "MCP server for frontend test automation",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "test-generator": "./dist/index.js"
+    "test-toolkit": "./dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -21,6 +21,7 @@
   "keywords": [
     "mcp",
     "testing",
+    "automation",
     "frontend",
     "vitest",
     "jest",
