@@ -50,7 +50,7 @@
 ### 패키지 네이밍
 
 - 스코프: `@frontend-mcp-kit/`
-- 케밥케이스: `hardcoded-strings`, `test-generator`
+- 케밥케이스: `hardcoded-strings`, `test-toolkit`
 
 ### 커밋 메시지
 

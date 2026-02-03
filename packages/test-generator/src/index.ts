@@ -29,7 +29,7 @@ import {
 } from "./tools/suggest-test-names.js";
 
 const server = new McpServer({
-  name: "test-generator",
+  name: "test-toolkit",
   version: "0.0.1",
 });
 
@@ -122,7 +122,7 @@ server.registerTool(
 async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("test-generator MCP server running");
+  console.error("test-toolkit MCP server running");
 }
 
 main().catch(console.error);
