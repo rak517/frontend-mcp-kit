@@ -41,7 +41,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/test-generator:
+  packages/test-toolkit:
     dependencies:
       "@modelcontextprotocol/sdk":
         specifier: ^1.0.0
