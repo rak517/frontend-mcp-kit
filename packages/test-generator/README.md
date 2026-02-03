@@ -1,16 +1,16 @@
-# @frontend-mcp-kit/test-generator
+# @frontend-mcp-kit/test-toolkit
 
-프론트엔드 개발자의 테스트 작성 DX를 향상시키는 MCP 서버입니다.
+프론트엔드 테스트 자동화를 위한 MCP 서버입니다.
 
 ## 개요
 
-Claude Code, Cursor 등 AI 도구와 함께 사용하여 테스트 환경 감지, 코드 분석, 테스트 파일 생성에 필요한 정보를 제공합니다.
+Claude Code, Cursor 등 AI 도구와 함께 사용하여 테스트 실행, 결과 피드백, 커버리지 분석 등 AI가 직접 할 수 없는 테스트 자동화 기능을 제공합니다.
 
 ## 설치
 
 ```bash
 # 로컬 빌드
-pnpm build --filter @frontend-mcp-kit/test-generator
+pnpm build --filter @frontend-mcp-kit/test-toolkit
 ```
 
 ## 설정
@@ -18,7 +18,7 @@ pnpm build --filter @frontend-mcp-kit/test-generator
 ### Claude Code
 
 ```bash
-claude mcp add test-generator node /path/to/dist/index.js
+claude mcp add test-toolkit node /path/to/dist/index.js
 ```
 
 ### Claude Desktop
@@ -28,7 +28,7 @@ claude mcp add test-generator node /path/to/dist/index.js
 ```json
 {
   "mcpServers": {
-    "test-generator": {
+    "test-toolkit": {
       "command": "node",
       "args": ["/path/to/dist/index.js"]
     }
@@ -236,37 +236,9 @@ React 컴포넌트의 접근성 테스트 포인트를 분석하고 jest-axe 사
 - Vitest
 - Jest
 
-## 현재 한계점
-
-### 메타데이터 중심의 분석
-
-현재 버전은 코드의 **메타데이터**(export 이름, 의존성 목록 등)만 제공합니다. AI가 실제로 테스트를 작성하려면 소스 코드를 직접 읽어야 하며, MCP가 제공하는 정보만으로는 충분하지 않습니다.
+## 목표 워크플로우
 
 ```
-현재 워크플로우:
-1. MCP: 메타데이터 제공 (export 이름, 의존성)
-2. AI: 소스 코드 직접 읽기 (추가 작업 필요)
-3. AI: 테스트 코드 작성
-```
-
-### 테스트 실행 불가
-
-MCP는 분석 기능만 제공하며, 테스트를 직접 실행하거나 결과를 확인할 수 없습니다. AI는 테스트가 통과하는지 확인할 방법이 없어 피드백 루프가 끊어집니다.
-
-### AI가 이미 할 수 있는 것과 중복
-
-- 코드 분석: AI가 소스 파일을 읽으면 직접 분석 가능
-- 테스트 이름 제안: AI가 코드를 이해하면 더 맥락에 맞는 이름 생성 가능
-- 환경 감지: `package.json`을 읽으면 AI가 직접 판단 가능
-
-## 개선 방향
-
-### 테스트 실행 및 피드백 루프
-
-현재 MCP는 분석만 가능하고 실행은 불가능합니다. 향후 AI가 직접 할 수 없는 **"테스트 실행 → 결과 피드백"** 기능을 추가하여 아래와 같은 워크플로우를 지원할 예정입니다.
-
-```
-목표 워크플로우:
 1. AI: 테스트 코드 작성
 2. MCP: 테스트 실행
 3. MCP: 결과 반환 (passed/failed, 에러 메시지)
@@ -274,9 +246,11 @@ MCP는 분석 기능만 제공하며, 테스트를 직접 실행하거나 결과
 5. 반복...
 ```
 
-### 프론트엔드 특화
+## 개선 예정
 
-일반적인 테스트 MCP가 아닌, React/Vue 등 프론트엔드 생태계에 최적화된 기능을 제공할 예정입니다.
+- 테스트 실행 및 결과 반환 (`run_tests`)
+- 커버리지 분석 (`analyze_coverage`)
+- 프론트엔드 특화 기능 (Testing Library, 스토리북 연동 등)
 
 ## 설계 원칙
 
