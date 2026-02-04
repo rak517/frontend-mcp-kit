@@ -2,7 +2,7 @@ import { z } from "zod";
 import { absolutePathSchema } from "../schemas.js";
 import { findProjectRoot, detectFramework } from "../utils/index.js";
 import type { McpToolResponse } from "../types.js";
-import { runVitest } from "../runners/vitest-runner.js";
+import { runVitest, runJest } from "../runners/index.js";
 
 export const runTestsSchema = z.object({
   testPath: absolutePathSchema.describe(
@@ -77,13 +77,7 @@ export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
   if (framework === "vitest") {
     result = await runVitest(testPath, root);
   } else {
-    // TODO: jest 구현 (다음 태스크)
-    result = {
-      success: false,
-      framework: "jest",
-      summary: { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 },
-      results: [],
-    };
+    result = await runJest(testPath, root);
   }
 
   return {
