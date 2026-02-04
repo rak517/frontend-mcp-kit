@@ -231,6 +231,58 @@ React 컴포넌트의 접근성 테스트 포인트를 분석하고 jest-axe 사
 ]
 ```
 
+### run_tests
+
+테스트를 실행하고 결과를 반환합니다. AI 피드백 루프의 핵심 도구입니다.
+
+**입력:**
+
+- `testPath`: 실행할 테스트 파일 또는 폴더의 절대 경로
+- `projectPath` (optional): 프로젝트 루트 경로 (미지정 시 자동 탐색)
+
+**출력:**
+
+```json
+{
+  "success": true,
+  "framework": "vitest",
+  "summary": {
+    "total": 10,
+    "passed": 9,
+    "failed": 1,
+    "skipped": 0,
+    "duration": 1234
+  },
+  "results": [
+    {
+      "name": "should render correctly",
+      "status": "passed",
+      "duration": 15,
+      "file": "/path/to/Button.test.tsx"
+    },
+    {
+      "name": "should handle click",
+      "status": "failed",
+      "duration": 23,
+      "file": "/path/to/Button.test.tsx",
+      "error": "expected 1 to be 2"
+    }
+  ]
+}
+```
+
+**사용 예시 (피드백 루프):**
+
+```
+AI: 테스트 코드 작성
+AI: run_tests 호출 → MCP 실행
+MCP: { success: false, results: [{ error: "expected 1 to be 2" }] }
+AI: "아, 1이 아니라 2여야 하는구나" → 코드 수정
+AI: run_tests 재호출
+MCP: { success: true }
+AI: "테스트 통과, 완료"
+```
+
 ## 지원 프레임워크
 
 - Vitest
@@ -248,7 +300,7 @@ React 컴포넌트의 접근성 테스트 포인트를 분석하고 jest-axe 사
 
 ## 개선 예정
 
-- 테스트 실행 및 결과 반환 (`run_tests`)
+- 실패 테스트 상세 정보 (expected/received/codeFrame)
 - 커버리지 분석 (`analyze_coverage`)
 - 프론트엔드 특화 기능 (Testing Library, 스토리북 연동 등)
 
