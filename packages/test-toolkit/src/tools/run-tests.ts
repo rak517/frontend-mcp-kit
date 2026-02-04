@@ -2,6 +2,7 @@ import { z } from "zod";
 import { absolutePathSchema } from "../schemas.js";
 import { findProjectRoot, detectFramework } from "../utils/index.js";
 import type { McpToolResponse } from "../types.js";
+import { runVitest } from "../runners/vitest-runner.js";
 
 export const runTestsSchema = z.object({
   testPath: absolutePathSchema.describe(
@@ -35,6 +36,7 @@ export interface RunTestsOutput {
     duration: number;
   };
   results: TestResult[];
+  error?: string;
 }
 
 export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
@@ -70,14 +72,19 @@ export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
     };
   }
 
-  // TODO: 다음 태스크에서 vitest/jest 실행 구현
+  let result: RunTestsOutput;
 
-  const result: RunTestsOutput = {
-    success: true,
-    framework,
-    summary: { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 },
-    results: [],
-  };
+  if (framework === "vitest") {
+    result = await runVitest(testPath, root);
+  } else {
+    // TODO: jest 구현 (다음 태스크)
+    result = {
+      success: false,
+      framework: "jest",
+      summary: { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 },
+      results: [],
+    };
+  }
 
   return {
     content: [
