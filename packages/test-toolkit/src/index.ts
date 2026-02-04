@@ -27,6 +27,7 @@ import {
   runSuggestTestNames,
   suggestTestNamesSchema,
 } from "./tools/suggest-test-names.js";
+import { runTests, runTestsSchema } from "./tools/run-tests.js";
 
 const server = new McpServer({
   name: "test-toolkit",
@@ -117,6 +118,16 @@ server.registerTool(
     inputSchema: suggestTestNamesSchema,
   },
   runSuggestTestNames
+);
+
+// Tool 9: 테스트 실행
+server.registerTool(
+  "run_tests",
+  {
+    description: "테스트를 실행하고 결과를 반환합니다 (vitest/jest 지원)",
+    inputSchema: runTestsSchema,
+  },
+  runTests
 );
 
 async function main(): Promise<void> {
