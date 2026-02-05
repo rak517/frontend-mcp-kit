@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { RunTestsOutput, TestResult } from "../tools/run-tests.js";
+import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
 
 interface VitestAssertionResult {
   title: string;
@@ -27,10 +27,16 @@ export async function runVitest(
   projectRoot: string
 ): Promise<RunTestsOutput> {
   return new Promise((resolve) => {
+    let settled = false;
+    const finish = (payload: RunTestsOutput) => {
+      if (settled) return;
+      settled = true;
+      resolve(payload);
+    };
+
     const args = ["vitest", "run", "--reporter=json", testPath];
     const child = spawn("npx", args, {
       cwd: projectRoot,
-      shell: true,
     });
 
     let stdout = "";
@@ -62,7 +68,7 @@ export async function runVitest(
           }
         }
 
-        resolve({
+        finish({
           success: json.success,
           framework: "vitest",
           summary: {
@@ -75,7 +81,7 @@ export async function runVitest(
           results,
         });
       } catch {
-        resolve({
+        finish({
           success: false,
           framework: "vitest",
           summary: { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 },
@@ -83,6 +89,16 @@ export async function runVitest(
           error: stderr || "vitest 실행 중 오류 발생",
         });
       }
+    });
+
+    child.on("error", (error) => {
+      finish({
+        success: false,
+        framework: "vitest",
+        summary: { total: 0, passed: 0, failed: 0, skipped: 0, duration: 0 },
+        results: [],
+        error: error.message,
+      });
     });
   });
 }
