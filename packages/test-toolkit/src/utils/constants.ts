@@ -9,3 +9,5 @@ export const JEST_CONFIGS = [
   "jest.config.ts",
   "jest.config.json",
 ];
+
+export const NPX_BIN = process.platform === "win32" ? "npx.cmd" : "npx";
