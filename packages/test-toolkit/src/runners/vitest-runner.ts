@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
+import { NPX_BIN } from "../utils/constants.js";
 
 interface VitestAssertionResult {
   title: string;
@@ -35,7 +36,7 @@ export async function runVitest(
     };
 
     const args = ["vitest", "run", "--reporter=json", testPath];
-    const child = spawn("npx", args, {
+    const child = spawn(NPX_BIN, args, {
       cwd: projectRoot,
     });
 
