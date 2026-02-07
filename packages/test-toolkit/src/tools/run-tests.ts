@@ -16,13 +16,29 @@ export const runTestsSchema = z.object({
 
 export type RunTestsInput = z.infer<typeof runTestsSchema>;
 
+export interface TestErrorInfo {
+  message: string;
+  expected?: string;
+  actual?: string;
+}
+
+export interface TestLocation {
+  file: string;
+  line?: number;
+  column?: number;
+}
+
 export interface TestResult {
   name: string;
   status: "passed" | "failed" | "skipped";
   duration: number;
-  error?: string;
-  file?: string;
-  line?: number;
+  error?: TestErrorInfo;
+  location?: TestLocation;
+}
+
+export interface TestFileMapping {
+  testFile: string;
+  sourceFile?: string;
 }
 
 export interface RunTestsOutput {
@@ -36,6 +52,7 @@ export interface RunTestsOutput {
     duration: number;
   };
   results: TestResult[];
+  mapping?: TestFileMapping;
   error?: string;
 }
 
