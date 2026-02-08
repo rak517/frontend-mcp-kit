@@ -63,8 +63,10 @@ export async function runVitest(
               status:
                 assertion.status === "pending" ? "skipped" : assertion.status,
               duration: assertion.duration,
-              file: testFile.name,
-              error: assertion.failureMessages?.[0],
+              location: { file: testFile.name },
+              error: assertion.failureMessages?.[0]
+                ? { message: assertion.failureMessages[0] }
+                : undefined,
             });
           }
         }
