@@ -110,6 +110,56 @@ Received: "b"`;
     });
   });
 
+  describe("Jest 커스텀 레이블 패턴 파싱", () => {
+    it("Expected substring / Received string 추출한다", () => {
+      const message = `expect(received).toContain(expected) // indexOf
+
+Expected substring: "xyz"
+Received string:    "hello world"`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.expected).toBe("xyz");
+      expect(result.actual).toBe("hello world");
+    });
+
+    it("Expected value / Received array 추출한다", () => {
+      const message = `expect(received).toContain(expected) // indexOf
+
+Expected value: 4
+Received array: [1,`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.expected).toBe("4");
+      expect(result.actual).toBe("[1,");
+    });
+
+    it("Expected length / Received length 추출한다", () => {
+      const message = `expect(received).toHaveLength(expected)
+
+Expected length: 3
+Received length: 2`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.expected).toBe("3");
+      expect(result.actual).toBe("2");
+    });
+
+    it("Expected pattern / Received string 추출한다", () => {
+      const message = `expect(received).toMatch(expected)
+
+Expected pattern: /xyz/
+Received string:  "hello world"`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.expected).toBe("/xyz/");
+      expect(result.actual).toBe("hello world");
+    });
+  });
+
   describe("to <matcher> 패턴 파싱", () => {
     it("expected 'X' to be 'Y' 패턴을 추출한다", () => {
       const message = `AssertionError: expected 'hello' to be 'world' // Object.is equality`;
