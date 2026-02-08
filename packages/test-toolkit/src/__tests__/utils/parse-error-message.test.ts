@@ -109,4 +109,33 @@ Received: "b"`;
       expect(result.message).toBe(message);
     });
   });
+
+  describe("to <matcher> 패턴 파싱", () => {
+    it("expected 'X' to be 'Y' 패턴을 추출한다", () => {
+      const message = `AssertionError: expected 'hello' to be 'world' // Object.is equality`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.actual).toBe("hello");
+      expect(result.expected).toBe("world");
+    });
+
+    it("expected 'X' to deeply equal 'Y' 패턴을 추출한다", () => {
+      const message = `AssertionError: expected 'foo' to deeply equal 'bar'`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.actual).toBe("foo");
+      expect(result.expected).toBe("bar");
+    });
+
+    it("expected 'X' to contain 'Y' 패턴을 추출한다", () => {
+      const message = `AssertionError: expected 'hello world' to contain 'xyz'`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.actual).toBe("hello world");
+      expect(result.expected).toBe("xyz");
+    });
+  });
 });
