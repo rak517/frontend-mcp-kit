@@ -65,8 +65,10 @@ export async function runJest(
                   ? "skipped"
                   : assertion.status,
               duration: assertion.duration ?? 0,
-              file: testFile.name,
-              error: assertion.failureMessages?.[0],
+              location: { file: testFile.name },
+              error: assertion.failureMessages?.[0]
+                ? { message: assertion.failureMessages[0] }
+                : undefined,
             });
           }
         }
