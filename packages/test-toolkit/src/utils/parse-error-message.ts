@@ -4,20 +4,27 @@ import type { TestErrorInfo } from "../tools/run-tests.js";
  * vitest/jest의 failureMessage에서 expected, actual 값을 추출
  *
  * 지원 패턴:
- * 1. Expected: "value" / Received: "value"
- * 2. expected 'actual' to be 'expected'
+ * 1. Expected [label]: "value" / Received [label]: "value"
+ *    - Expected: "hello" / Received: "world"
+ *    - Expected substring: "xyz" / Received string: "hello world"
+ *    - Expected value: 4 / Received array: [1, 2, 3]
+ *    - Expected length: 3 / Received length: 2
+ *    - Expected pattern: /xyz/ / Received string: "hello world"
+ * 2. expected 'actual' to <matcher> 'expected'
+ * 3. expected {actual} to <matcher> {expected}
+ * 4. expected <actual> to <matcher> <expected>
  */
 export function parseErrorMessage(failureMessage: string): TestErrorInfo {
   const result: TestErrorInfo = {
     message: failureMessage,
   };
 
-  // 패턴 1: Expected: "value" / Received: "value"
+  // 패턴 1: Expected [label]: "value" / Received [label]: "value"
   const expectedMatch = failureMessage.match(
-    /Expected:\s*(?:"([^"]+)"|'([^']+)'|(\S+))/i
+    /Expected(?:\s+\w+)*:\s*(?:"([^"]+)"|'([^']+)'|(\S+))/i
   );
   const receivedMatch = failureMessage.match(
-    /Received:\s*(?:"([^"]+)"|'([^']+)'|(\S+))/i
+    /Received(?:\s+\w+)*:\s*(?:"([^"]+)"|'([^']+)'|(\S+))/i
   );
 
   if (expectedMatch || receivedMatch) {
