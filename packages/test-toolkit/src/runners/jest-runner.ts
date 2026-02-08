@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
 import { NPX_BIN } from "../utils/constants.js";
+import { parseErrorMessage } from "../utils/parse-error-message.js";
 
 interface JestAssertionResult {
   title: string;
@@ -65,8 +66,10 @@ export async function runJest(
                   ? "skipped"
                   : assertion.status,
               duration: assertion.duration ?? 0,
-              file: testFile.name,
-              error: assertion.failureMessages?.[0],
+              location: { file: testFile.name },
+              error: assertion.failureMessages?.[0]
+                ? parseErrorMessage(assertion.failureMessages[0])
+                : undefined,
             });
           }
         }
