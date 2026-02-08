@@ -31,11 +31,32 @@ export function parseErrorMessage(failureMessage: string): TestErrorInfo {
     return result;
   }
 
-  // 패턴 2: expected 'actual' to <matcher> 'expected'
-  const toBeMatch = failureMessage.match(/expected '([^']*)' to .+ '([^']*)'/i);
-  if (toBeMatch) {
-    result.actual = toBeMatch[1];
-    result.expected = toBeMatch[2];
+  // 패턴 2: expected 'actual' to <matcher> 'expected' (문자열)
+  const quotedMatch = failureMessage.match(
+    /expected '([^']*)' to .+ '([^']*)'/i
+  );
+  if (quotedMatch) {
+    result.actual = quotedMatch[1];
+    result.expected = quotedMatch[2];
+    return result;
+  }
+
+  const firstLine = failureMessage.split("\n")[0];
+  const cleaned = firstLine.replace(/\s*\/\/.*$/, "");
+
+  // 패턴 3: expected {actual} to <matcher> {expected} (객체)
+  const objectMatch = cleaned.match(/expected (\{.+\}) to .+ (\{.+\})$/i);
+  if (objectMatch) {
+    result.actual = objectMatch[1];
+    result.expected = objectMatch[2];
+    return result;
+  }
+
+  // 패턴 4: expected <actual> to <matcher> <expected> (숫자, boolean 등)
+  const generalMatch = cleaned.match(/expected (.+) to .+ (\S+)$/i);
+  if (generalMatch) {
+    result.actual = generalMatch[1];
+    result.expected = generalMatch[2];
     return result;
   }
 
