@@ -36,11 +36,6 @@ export interface TestResult {
   location?: TestLocation;
 }
 
-export interface TestFileMapping {
-  testFile: string;
-  sourceFile?: string;
-}
-
 export interface RunTestsOutput {
   success: boolean;
   framework: "vitest" | "jest" | "unknown";
@@ -52,7 +47,6 @@ export interface RunTestsOutput {
     duration: number;
   };
   results: TestResult[];
-  mapping?: TestFileMapping;
   error?: string;
 }
 
