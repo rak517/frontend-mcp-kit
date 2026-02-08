@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
 import { NPX_BIN } from "../utils/constants.js";
+import { parseErrorMessage } from "../utils/parse-error-message.js";
 
 interface VitestAssertionResult {
   title: string;
@@ -65,7 +66,7 @@ export async function runVitest(
               duration: assertion.duration,
               location: { file: testFile.name },
               error: assertion.failureMessages?.[0]
-                ? { message: assertion.failureMessages[0] }
+                ? parseErrorMessage(assertion.failureMessages[0])
                 : undefined,
             });
           }
