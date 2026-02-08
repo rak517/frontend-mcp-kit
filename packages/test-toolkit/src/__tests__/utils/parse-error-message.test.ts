@@ -138,4 +138,33 @@ Received: "b"`;
       expect(result.expected).toBe("xyz");
     });
   });
+
+  describe("따옴표 없는 값 파싱", () => {
+    it("숫자 비교를 추출한다", () => {
+      const message = `AssertionError: expected 123 to be 456 // Object.is equality`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.actual).toBe("123");
+      expect(result.expected).toBe("456");
+    });
+
+    it("객체 비교를 추출한다", () => {
+      const message = `AssertionError: expected { a: 1 } to deeply equal { a: 2 }`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.actual).toBe("{ a: 1 }");
+      expect(result.expected).toBe("{ a: 2 }");
+    });
+
+    it("boolean 비교를 추출한다", () => {
+      const message = `AssertionError: expected true to be false // Object.is equality`;
+
+      const result = parseErrorMessage(message);
+
+      expect(result.actual).toBe("true");
+      expect(result.expected).toBe("false");
+    });
+  });
 });
