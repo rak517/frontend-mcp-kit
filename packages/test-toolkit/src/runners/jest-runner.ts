@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
 import { NPX_BIN } from "../utils/constants.js";
 import { parseErrorMessage } from "../utils/parse-error-message.js";
+import { extractLocation } from "../utils/parse-stack-trace.js";
 
 interface JestAssertionResult {
   title: string;
@@ -78,6 +79,12 @@ export async function runJest(
 
         for (const testFile of json.testResults) {
           for (const assertion of testFile.assertionResults) {
+            const error = assertion.failureMessages?.[0]
+              ? parseErrorMessage(assertion.failureMessages[0])
+              : undefined;
+
+            const loc = error?.stack ? extractLocation(error.stack) : null;
+
             results.push({
               name: assertion.title,
               status:
@@ -85,10 +92,8 @@ export async function runJest(
                   ? "skipped"
                   : assertion.status,
               duration: assertion.duration ?? 0,
-              location: { file: testFile.name },
-              error: assertion.failureMessages?.[0]
-                ? parseErrorMessage(assertion.failureMessages[0])
-                : undefined,
+              location: { file: testFile.name, ...loc },
+              error,
             });
           }
         }
