@@ -57,7 +57,7 @@ export interface RunTestsOutput {
 }
 
 export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
-  const { testPath, projectPath, timeout } = input;
+  const { testPath, projectPath, timeout = 30 } = input;
 
   const root = projectPath || findProjectRoot(testPath);
   if (!root) {
