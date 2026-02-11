@@ -53,6 +53,37 @@ describe("runTestsSchema", () => {
       }
     });
   });
+
+  describe("timeout 검증", () => {
+    it("미지정 시 기본값 30이 적용된다", () => {
+      const result = runTestsSchema.safeParse({
+        testPath: "/path/to/test.ts",
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.timeout).toBe(30);
+      }
+    });
+
+    it("커스텀 값을 지정할 수 있다", () => {
+      const result = runTestsSchema.safeParse({
+        testPath: "/path/to/test.ts",
+        timeout: 60,
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.timeout).toBe(60);
+      }
+    });
+
+    it("문자열은 거부한다", () => {
+      const result = runTestsSchema.safeParse({
+        testPath: "/path/to/test.ts",
+        timeout: "30",
+      });
+      expect(result.success).toBe(false);
+    });
+  });
 });
 
 describe("runTests", () => {
@@ -157,7 +188,7 @@ describe("runTests", () => {
       expect(firstResult).toHaveProperty("name");
       expect(firstResult).toHaveProperty("status");
       expect(firstResult).toHaveProperty("duration");
-      expect(firstResult).toHaveProperty("file");
+      expect(firstResult).toHaveProperty("location");
     }, 30000);
 
     it("should use provided projectPath", async () => {
