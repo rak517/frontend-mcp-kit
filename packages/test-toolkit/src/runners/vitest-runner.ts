@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
 import { NPX_BIN } from "../utils/constants.js";
 import { parseErrorMessage } from "../utils/parse-error-message.js";
+import { extractLocation } from "../utils/parse-stack-trace.js";
 
 interface VitestAssertionResult {
   title: string;
@@ -78,15 +79,19 @@ export async function runVitest(
 
         for (const testFile of json.testResults) {
           for (const assertion of testFile.assertionResults) {
+            const error = assertion.failureMessages?.[0]
+              ? parseErrorMessage(assertion.failureMessages[0])
+              : undefined;
+
+            const loc = error?.stack ? extractLocation(error.stack) : null;
+
             results.push({
               name: assertion.title,
               status:
                 assertion.status === "pending" ? "skipped" : assertion.status,
               duration: assertion.duration,
-              location: { file: testFile.name },
-              error: assertion.failureMessages?.[0]
-                ? parseErrorMessage(assertion.failureMessages[0])
-                : undefined,
+              location: { file: testFile.name, ...loc },
+              error,
             });
           }
         }
