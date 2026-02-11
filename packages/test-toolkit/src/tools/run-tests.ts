@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { absolutePathSchema } from "../schemas.js";
-import { findProjectRoot, detectFramework } from "../utils/index.js";
+import {
+  findProjectRoot,
+  detectFramework,
+  formatResults,
+} from "../utils/index.js";
 import type { McpToolResponse } from "../types.js";
 import { runVitest, runJest } from "../runners/index.js";
 
@@ -98,6 +102,8 @@ export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
   } else {
     result = await runJest(testPath, root, timeout);
   }
+
+  result = formatResults(result);
 
   return {
     content: [

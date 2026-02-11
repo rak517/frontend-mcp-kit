@@ -4,3 +4,4 @@ export { detectFramework } from "./detect-framework.js";
 export { parseErrorMessage } from "./parse-error-message.js";
 export { parseStackTrace, extractLocation } from "./parse-stack-trace.js";
 export { readSourceContext } from "./read-source-context.js";
+export { formatResults } from "./format-results.js";
