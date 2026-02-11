@@ -1,4 +1,6 @@
 import type { TestErrorInfo } from "../tools/run-tests.js";
+import { parseStackTrace } from "./parse-stack-trace.js";
+import { ANSI_REGEX } from "./constants.js";
 
 /**
  * vitest/jest의 failureMessage에서 expected, actual 값을 추출
@@ -15,8 +17,11 @@ import type { TestErrorInfo } from "../tools/run-tests.js";
  * 4. expected <actual> to <matcher> <expected>
  */
 export function parseErrorMessage(failureMessage: string): TestErrorInfo {
+  const cleanMessage = failureMessage.replace(ANSI_REGEX, "");
+
   const result: TestErrorInfo = {
-    message: failureMessage,
+    message: cleanMessage,
+    stack: parseStackTrace(failureMessage),
   };
 
   // 패턴 1: Expected [label]: "value" / Received [label]: "value"
