@@ -12,6 +12,12 @@ export const runTestsSchema = z.object({
     .string()
     .optional()
     .describe("프로젝트 루트 경로 (미지정 시 자동 탐색)"),
+
+  timeout: z
+    .number()
+    .optional()
+    .default(30)
+    .describe("테스트 실행 제한 시간 (초, 기본값: 30"),
 });
 
 export type RunTestsInput = z.infer<typeof runTestsSchema>;
@@ -51,7 +57,7 @@ export interface RunTestsOutput {
 }
 
 export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
-  const { testPath, projectPath } = input;
+  const { testPath, projectPath, timeout } = input;
 
   const root = projectPath || findProjectRoot(testPath);
   if (!root) {
@@ -86,9 +92,9 @@ export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {
   let result: RunTestsOutput;
 
   if (framework === "vitest") {
-    result = await runVitest(testPath, root);
+    result = await runVitest(testPath, root, timeout);
   } else {
-    result = await runJest(testPath, root);
+    result = await runJest(testPath, root, timeout);
   }
 
   return {
