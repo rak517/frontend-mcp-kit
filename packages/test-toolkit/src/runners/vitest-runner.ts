@@ -26,7 +26,8 @@ interface VitestJsonOutput {
 
 export async function runVitest(
   testPath: string,
-  projectRoot: string
+  projectRoot: string,
+  timeout: number
 ): Promise<RunTestsOutput> {
   return new Promise((resolve) => {
     let settled = false;
@@ -41,6 +42,23 @@ export async function runVitest(
       cwd: projectRoot,
     });
 
+    const timer = setTimeout(() => {
+      child.kill();
+      finish({
+        success: false,
+        framework: "vitest",
+        summary: {
+          total: 0,
+          passed: 0,
+          failed: 0,
+          skipped: 0,
+          duration: timeout * 1000,
+        },
+        results: [],
+        error: `테스트 실행이 ${timeout}초 타임아웃을 초과했습니다. 테스트 환경(jsdom, happy-dom)이나 비동기 처리를 확인하세요.`,
+      });
+    }, timeout * 1000);
+
     let stdout = "";
     let stderr = "";
 
@@ -53,6 +71,7 @@ export async function runVitest(
     });
 
     child.on("close", () => {
+      clearTimeout(timer);
       try {
         const json: VitestJsonOutput = JSON.parse(stdout);
         const results: TestResult[] = [];
@@ -96,6 +115,7 @@ export async function runVitest(
     });
 
     child.on("error", (error) => {
+      clearTimeout(timer);
       finish({
         success: false,
         framework: "vitest",
