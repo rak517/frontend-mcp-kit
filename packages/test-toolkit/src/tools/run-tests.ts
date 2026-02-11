@@ -26,6 +26,7 @@ export interface TestErrorInfo {
   message: string;
   expected?: string;
   actual?: string;
+  stack?: string[];
 }
 
 export interface TestLocation {
