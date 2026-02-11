@@ -4,15 +4,16 @@ import { resolve } from "node:path";
 
 describe("runVitest", () => {
   const projectRoot = process.cwd();
+  const defaultTimeout = 30;
 
-  describe("successful execution", () => {
-    it("should return RunTestsOutput format", async () => {
+  describe("정상 실행", () => {
+    it("RunTestsOutput 형태를 반환한다", async () => {
       const testPath = resolve(
         projectRoot,
         "src/__tests__/core/schemas.test.ts"
       );
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result).toHaveProperty("success");
       expect(result).toHaveProperty("framework", "vitest");
@@ -20,13 +21,13 @@ describe("runVitest", () => {
       expect(result).toHaveProperty("results");
     }, 30000);
 
-    it("should return correct summary structure", async () => {
+    it("올바른 summary 구조를 반환한다", async () => {
       const testPath = resolve(
         projectRoot,
         "src/__tests__/core/schemas.test.ts"
       );
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result.summary).toHaveProperty("total");
       expect(result.summary).toHaveProperty("passed");
@@ -35,26 +36,26 @@ describe("runVitest", () => {
       expect(result.summary).toHaveProperty("duration");
     }, 30000);
 
-    it("should return passing tests with success true", async () => {
+    it("통과하는 테스트는 success: true를 반환한다", async () => {
       const testPath = resolve(
         projectRoot,
         "src/__tests__/core/schemas.test.ts"
       );
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result.success).toBe(true);
       expect(result.summary.passed).toBeGreaterThan(0);
       expect(result.summary.failed).toBe(0);
     }, 30000);
 
-    it("should return test results with required fields", async () => {
+    it("개별 테스트 결과에 필수 필드가 포함된다", async () => {
       const testPath = resolve(
         projectRoot,
         "src/__tests__/core/schemas.test.ts"
       );
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result.results.length).toBeGreaterThan(0);
 
@@ -62,61 +63,108 @@ describe("runVitest", () => {
         expect(testResult).toHaveProperty("name");
         expect(testResult).toHaveProperty("status");
         expect(testResult).toHaveProperty("duration");
-        expect(testResult).toHaveProperty("file");
+        expect(testResult).toHaveProperty("location");
         expect(["passed", "failed", "skipped"]).toContain(testResult.status);
       }
     }, 30000);
 
-    it("should include file path in results", async () => {
+    it("결과에 파일 경로가 포함된다", async () => {
       const testPath = resolve(
         projectRoot,
         "src/__tests__/core/schemas.test.ts"
       );
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
-      expect(result.results[0].file).toContain("schemas.test.ts");
+      expect(result.results[0].location?.file).toContain("schemas.test.ts");
     }, 30000);
   });
 
-  describe("error handling", () => {
-    it("should return error for nonexistent test file", async () => {
+  describe("에러 처리", () => {
+    it("존재하지 않는 파일은 실패를 반환한다", async () => {
       const testPath = resolve(projectRoot, "nonexistent.test.ts");
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result.success).toBe(false);
     }, 30000);
 
-    it("should return success false for nonexistent file", async () => {
+    it("존재하지 않는 파일에서 framework 정보를 유지한다", async () => {
       const testPath = resolve(projectRoot, "nonexistent.test.ts");
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
-      // vitest는 파일이 없어도 유효한 JSON을 반환 (success: false)
-      // error 필드는 JSON 파싱 실패 시에만 설정됨
       expect(result.success).toBe(false);
       expect(result.framework).toBe("vitest");
     }, 30000);
 
-    it("should return empty results on error", async () => {
+    it("에러 시 빈 결과를 반환한다", async () => {
       const testPath = resolve(projectRoot, "nonexistent.test.ts");
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result.results).toEqual([]);
       expect(result.summary.total).toBe(0);
     }, 30000);
   });
 
-  describe("folder execution", () => {
-    it("should run all tests in a folder", async () => {
+  describe("폴더 실행", () => {
+    it("폴더 내 모든 테스트를 실행한다", async () => {
       const testPath = resolve(projectRoot, "src/__tests__/core");
 
-      const result = await runVitest(testPath, projectRoot);
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
 
       expect(result.success).toBe(true);
       expect(result.summary.total).toBeGreaterThan(5);
     }, 60000);
+  });
+
+  describe("타임아웃", () => {
+    it("제한 시간 초과 시 프로세스를 종료하고 에러를 반환한다", async () => {
+      const testPath = resolve(projectRoot, "src/__tests__/core");
+
+      // 0.001초(1ms)는 vitest 기동 시간보다 짧아서 반드시 타임아웃 발생
+      const result = await runVitest(testPath, projectRoot, 0.001);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain("타임아웃");
+    }, 10000);
+
+    it("타임아웃 에러에 제한 시간이 포함된다", async () => {
+      const testPath = resolve(projectRoot, "src/__tests__/core");
+
+      const result = await runVitest(testPath, projectRoot, 0.001);
+
+      expect(result.error).toContain("0.001초");
+    }, 10000);
+
+    it("타임아웃 시 framework 정보를 유지한다", async () => {
+      const testPath = resolve(projectRoot, "src/__tests__/core");
+
+      const result = await runVitest(testPath, projectRoot, 0.001);
+
+      expect(result.framework).toBe("vitest");
+    }, 10000);
+
+    it("타임아웃 시 빈 결과와 요약을 반환한다", async () => {
+      const testPath = resolve(projectRoot, "src/__tests__/core");
+
+      const result = await runVitest(testPath, projectRoot, 0.001);
+
+      expect(result.results).toEqual([]);
+      expect(result.summary.total).toBe(0);
+    }, 10000);
+
+    it("충분한 시간이면 정상 완료한다", async () => {
+      const testPath = resolve(
+        projectRoot,
+        "src/__tests__/core/schemas.test.ts"
+      );
+
+      const result = await runVitest(testPath, projectRoot, 60);
+
+      expect(result.success).toBe(true);
+      expect(result.error).toBeUndefined();
+    }, 65000);
   });
 });
