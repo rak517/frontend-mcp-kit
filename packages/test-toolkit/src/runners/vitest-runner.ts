@@ -3,6 +3,7 @@ import type { RunTestsOutput, TestResult } from "../tools/run-tests.js";
 import { NPX_BIN } from "../utils/constants.js";
 import { parseErrorMessage } from "../utils/parse-error-message.js";
 import { extractLocation } from "../utils/parse-stack-trace.js";
+import { readSourceContext } from "../utils/read-source-context.js";
 
 interface VitestAssertionResult {
   title: string;
@@ -85,6 +86,10 @@ export async function runVitest(
 
             const loc = error?.stack ? extractLocation(error.stack) : null;
 
+            const sourceContext = loc?.line
+              ? (readSourceContext(testFile.name, loc.line) ?? undefined)
+              : undefined;
+
             results.push({
               name: assertion.title,
               status:
@@ -92,6 +97,7 @@ export async function runVitest(
               duration: assertion.duration,
               location: { file: testFile.name, ...loc },
               error,
+              sourceContext,
             });
           }
         }
