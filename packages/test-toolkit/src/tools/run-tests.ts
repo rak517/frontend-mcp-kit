@@ -41,6 +41,7 @@ export interface TestResult {
   duration: number;
   error?: TestErrorInfo;
   location?: TestLocation;
+  sourceContext?: string;
 }
 
 export interface RunTestsOutput {
