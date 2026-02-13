@@ -176,7 +176,7 @@ describe("runTests", () => {
     it("should return individual test results", async () => {
       const testPath = resolve(
         process.cwd(),
-        "src/__tests__/core/schemas.test.ts"
+        "src/__tests__/fixtures/__fail_fixture.test.ts"
       );
 
       const result = await runTests({ testPath });
@@ -184,11 +184,16 @@ describe("runTests", () => {
 
       expect(parsed.results.length).toBeGreaterThan(0);
 
-      const firstResult = parsed.results[0];
-      expect(firstResult).toHaveProperty("name");
-      expect(firstResult).toHaveProperty("status");
-      expect(firstResult).toHaveProperty("duration");
-      expect(firstResult).toHaveProperty("location");
+      const failedResult = parsed.results.find(
+        (r: { status: string }) => r.status === "failed"
+      );
+      expect(failedResult).toBeDefined();
+      expect(failedResult).toHaveProperty("name");
+      expect(failedResult).toHaveProperty("status", "failed");
+      expect(failedResult).toHaveProperty("duration");
+      expect(failedResult).toHaveProperty("location");
+      expect(failedResult.location).toHaveProperty("file");
+      expect(failedResult.location).toHaveProperty("line");
     }, 30000);
 
     it("should use provided projectPath", async () => {
