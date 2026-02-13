@@ -119,6 +119,64 @@ describe("runVitest", () => {
     }, 60000);
   });
 
+  describe("실패 테스트 처리", () => {
+    it("실패 테스트에서 location에 line과 column이 포함된다", async () => {
+      const testPath = resolve(
+        projectRoot,
+        "src/__tests__/fixtures/__fail_fixture.test.ts"
+      );
+
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
+
+      expect(result.success).toBe(false);
+      const failed = result.results.find((r) => r.status === "failed");
+      expect(failed).toBeDefined();
+      expect(failed!.location?.line).toBeTypeOf("number");
+      expect(failed!.location?.column).toBeTypeOf("number");
+    }, 30000);
+
+    it("실패 테스트에서 error에 message, expected, actual이 포함된다", async () => {
+      const testPath = resolve(
+        projectRoot,
+        "src/__tests__/fixtures/__fail_fixture.test.ts"
+      );
+
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
+
+      const failed = result.results.find((r) => r.status === "failed");
+      expect(failed!.error).toBeDefined();
+      expect(failed!.error!.message).toContain("expected");
+      expect(failed!.error!.expected).toBe("world");
+      expect(failed!.error!.actual).toBe("hello");
+    }, 30000);
+
+    it("실패 테스트에서 sourceContext가 포함된다", async () => {
+      const testPath = resolve(
+        projectRoot,
+        "src/__tests__/fixtures/__fail_fixture.test.ts"
+      );
+
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
+
+      const failed = result.results.find((r) => r.status === "failed");
+      expect(failed!.sourceContext).toBeDefined();
+      expect(failed!.sourceContext).toContain(">");
+      expect(failed!.sourceContext).toContain("expect");
+    }, 30000);
+
+    it("실패 테스트에서 error.stack이 배열로 반환된다", async () => {
+      const testPath = resolve(
+        projectRoot,
+        "src/__tests__/fixtures/__fail_fixture.test.ts"
+      );
+
+      const result = await runVitest(testPath, projectRoot, defaultTimeout);
+
+      const failed = result.results.find((r) => r.status === "failed");
+      expect(Array.isArray(failed!.error!.stack)).toBe(true);
+    }, 30000);
+  });
+
   describe("타임아웃", () => {
     it("제한 시간 초과 시 프로세스를 종료하고 에러를 반환한다", async () => {
       const testPath = resolve(projectRoot, "src/__tests__/core");
