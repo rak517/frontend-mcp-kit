@@ -10,6 +10,7 @@ interface VitestAssertionResult {
   status: "passed" | "failed" | "pending";
   duration: number;
   failureMessages?: string[];
+  location?: { line: number; column: number };
 }
 
 interface VitestTestResult {
@@ -83,8 +84,8 @@ export async function runVitest(
             const error = assertion.failureMessages?.[0]
               ? parseErrorMessage(assertion.failureMessages[0])
               : undefined;
-
-            const loc = error?.stack ? extractLocation(error.stack) : null;
+            const stackLoc = error?.stack ? extractLocation(error.stack) : null;
+            const loc = assertion.location ?? stackLoc;
 
             const sourceContext = loc?.line
               ? (readSourceContext(testFile.name, loc.line) ?? undefined)
