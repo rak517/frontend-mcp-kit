@@ -25,10 +25,10 @@ export function parseErrorMessage(failureMessage: string): TestErrorInfo {
   };
 
   // 패턴 1: Expected [label]: "value" / Received [label]: "value"
-  const expectedMatch = failureMessage.match(
+  const expectedMatch = cleanMessage.match(
     /Expected(?:\s+\w+)*:\s*(?:"([^"]+)"|'([^']+)'|(\S+))/i
   );
-  const receivedMatch = failureMessage.match(
+  const receivedMatch = cleanMessage.match(
     /Received(?:\s+\w+)*:\s*(?:"([^"]+)"|'([^']+)'|(\S+))/i
   );
 
@@ -44,16 +44,14 @@ export function parseErrorMessage(failureMessage: string): TestErrorInfo {
   }
 
   // 패턴 2: expected 'actual' to <matcher> 'expected' (문자열)
-  const quotedMatch = failureMessage.match(
-    /expected '([^']*)' to .+ '([^']*)'/i
-  );
+  const quotedMatch = cleanMessage.match(/expected '([^']*)' to .+ '([^']*)'/i);
   if (quotedMatch) {
     result.actual = quotedMatch[1];
     result.expected = quotedMatch[2];
     return result;
   }
 
-  const firstLine = failureMessage.split("\n")[0];
+  const firstLine = cleanMessage.split("\n")[0];
   const cleaned = firstLine.replace(/\s*\/\/.*$/, "");
 
   // 패턴 3: expected {actual} to <matcher> {expected} (객체)
