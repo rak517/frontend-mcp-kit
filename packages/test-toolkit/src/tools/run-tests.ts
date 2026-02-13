@@ -60,6 +60,7 @@ export interface RunTestsOutput {
   };
   results: TestResult[];
   error?: string;
+  warning?: string;
 }
 
 export async function runTests(input: RunTestsInput): Promise<McpToolResponse> {

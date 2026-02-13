@@ -103,6 +103,18 @@ export async function runVitest(
           }
         }
 
+        // vitest 1.x 감지: 실패한 assertion에 location은 있지만
+        // failureMessages에 스택 트레이스가 없는 경우
+        const hasV1LocationIssue = json.testResults.some((tf) =>
+          tf.assertionResults.some(
+            (a) =>
+              a.status === "failed" &&
+              a.location != null &&
+              a.failureMessages?.[0] &&
+              !a.failureMessages[0].includes("\n    at ")
+          )
+        );
+
         finish({
           success: json.success,
           framework: "vitest",
@@ -114,6 +126,10 @@ export async function runVitest(
             duration: results.reduce((sum, r) => sum + r.duration, 0),
           },
           results,
+          ...(hasV1LocationIssue && {
+            warning:
+              "vitest 1.x에서는 외부 라이브러리(testing-library 등) 에러의 실패 위치가 부정확할 수 있습니다. vitest 2.0 이상으로 업그레이드를 권장합니다.",
+          }),
         });
       } catch {
         finish({
