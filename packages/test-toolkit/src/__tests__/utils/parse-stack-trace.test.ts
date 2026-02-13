@@ -122,6 +122,17 @@ describe("extractLocation", () => {
       expect(extractLocation(stack)).toBeNull();
     });
 
+    it("eval 프레임을 건너뛰고 다음 프레임에서 추출한다", () => {
+      const stack = [
+        "    at eval (eval at <anonymous>, <anonymous>:1:1)",
+        "    at Object.<anonymous> (/src/test.ts:15:5)",
+      ];
+
+      const result = extractLocation(stack);
+
+      expect(result).toEqual({ line: 15, column: 5 });
+    });
+
     it("매칭되지 않는 형식이면 null을 반환한다", () => {
       const stack = ["    at Object.<anonymous> (unknown)"];
 

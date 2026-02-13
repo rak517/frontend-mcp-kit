@@ -27,8 +27,8 @@ export function extractLocation(
 ): Pick<TestLocation, "line" | "column"> | null {
   if (stack.length === 0) return null;
 
-  const frame = stack[0];
-  if (frame.includes("eval")) return null;
+  const frame = stack.find((f) => !f.includes("eval"));
+  if (!frame) return null;
 
   // file:line:column (컬럼 있음)
   const fullMatch = frame.match(/:(\d+):(\d+)\)?$/);
