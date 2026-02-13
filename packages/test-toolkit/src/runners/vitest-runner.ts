@@ -85,7 +85,7 @@ export async function runVitest(
               ? parseErrorMessage(assertion.failureMessages[0])
               : undefined;
             const stackLoc = error?.stack ? extractLocation(error.stack) : null;
-            const loc = assertion.location ?? stackLoc;
+            const loc = stackLoc ?? assertion.location;
 
             const sourceContext = loc?.line
               ? (readSourceContext(testFile.name, loc.line) ?? undefined)
